@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
-        DOCKERHUB_REPO        = 'nishchal001king/vscode-server'
+        DOCKERHUB_REPO        = 'nishchal007/vscode-server'
         IMAGE_TAG             = "${env.BUILD_NUMBER}"
     }
 
@@ -20,29 +20,29 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 bat """
-                    docker build -t %DOCKERHUB_REPO%:%IMAGE_TAG% .
-                    docker tag %DOCKERHUB_REPO%:%IMAGE_TAG% %DOCKERHUB_REPO%:latest
+                    docker build --no-cache -t nishchal007/vscode-server:%IMAGE_TAG% .
+                    docker tag nishchal007/vscode-server:%IMAGE_TAG% nishchal007/vscode-server:latest
                 """
             }
         }
 
-       stage('Test Image') {
-    steps {
-        bat """
-            docker run -d --name vscode-test -p 8888:8888 nishchal007/vscode-server:%IMAGE_TAG%
-            ping -n 10 127.0.0.1 > nul
-            docker stop vscode-test
-            docker rm vscode-test
-        """
-    }
-}
+        stage('Test Image') {
+            steps {
+                bat """
+                    docker run -d --name vscode-test -p 8888:8888 nishchal007/vscode-server:%IMAGE_TAG%
+                    ping -n 10 127.0.0.1 > nul
+                    docker stop vscode-test
+                    docker rm vscode-test
+                """
+            }
+        }
 
         stage('Push to Docker Hub') {
             steps {
                 bat """
                     echo %DOCKERHUB_CREDENTIALS_PSW%| docker login -u %DOCKERHUB_CREDENTIALS_USR% --password-stdin
-                    docker push %DOCKERHUB_REPO%:%IMAGE_TAG%
-                    docker push %DOCKERHUB_REPO%:latest
+                    docker push nishchal007/vscode-server:%IMAGE_TAG%
+                    docker push nishchal007/vscode-server:latest
                 """
             }
         }
@@ -50,8 +50,8 @@ pipeline {
         stage('Cleanup') {
             steps {
                 bat """
-                    docker rmi %DOCKERHUB_REPO%:%IMAGE_TAG% || exit 0
-                    docker rmi %DOCKERHUB_REPO%:latest || exit 0
+                    docker rmi nishchal007/vscode-server:%IMAGE_TAG% || exit 0
+                    docker rmi nishchal007/vscode-server:latest || exit 0
                     docker logout
                 """
             }
@@ -59,7 +59,7 @@ pipeline {
     }
 
     post {
-        success { echo 'VSCode image pushed to Docker Hub!' }
+        success { echo 'VSCode image pushed to Docker Hub successfully!' }
         failure { echo 'Pipeline failed. Check logs.' }
     }
 }

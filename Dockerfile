@@ -15,8 +15,8 @@ USER coder
 WORKDIR /home/coder
 
 RUN mkdir -p /home/coder/.config/code-server && \
-    printf 'bind-addr: 0.0.0.0:8080\nauth: password\npassword: changeme123\ncert: false\n' \
+    printf 'bind-addr: 0.0.0.0:8888\nauth: password\npassword: changeme123\ncert: false\n' \
     > /home/coder/.config/code-server/config.yaml
 
-EXPOSE 8080
-CMD ["code-server", "--bind-addr", "0.0.0.0:8080", "/home/coder"]
+EXPOSE 8888
+CMD ["code-server", "--bind-addr", "0.0.0.0:8888", "/home/coder"]
